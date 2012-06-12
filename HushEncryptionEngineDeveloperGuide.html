@@ -1,0 +1,91 @@
+<html>
+<head>
+<style>
+H1,H2,H3,H4,small {
+font-family: Verdana;
+}
+
+H1 { color: #ef8f2f; font-size: 24px; margin-bottom: 0px;}
+small { color: #ef8f2f; font-size: 18px; }
+H2 { color: #3f727f; font-size: 18px; margin-top: 35px; }
+H3 { color: #005f8f; font-size: 12px; margin-left: 10px;}
+a  { color: #990000; }
+
+pre {
+margin-left: 15px;
+color: #00334c;
+font-family: Arial;
+font-size: 12px;
+}
+
+ol {
+margin-left: 15px;
+color: #00334c;
+font-family: Arial;
+font-size: 12px;
+}
+
+body {
+margin-left: 15px;
+color: #00334c;
+font-family: Arial;
+font-size: 12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Hush Encryption Engine Developer Guide</h1>
+
+<h2>Contents</h2>
+<pre>
+<a href="#UsingJava">Initializing the Hush Encryption Engine in Java</a>
+</pre>
+
+Detailed information on using the Hush Encryption Engine
+is available in the included API documentation.  This document is a quick start
+guide intended to show you how to use the Hush Encryption Engine in a basic way.  Once you get
+an idea of what you need to do, please read
+the API documentation for detailed information.
+<br>
+
+<h2><a name="UsingJava">Using the Hush Encryption Engine in Java</a></h2>
+
+The <code>com.hush.hee.HushEncryptionEngineCore</code> object provides
+core functionality for the Hush Encryption Engine.
+You can instantiate and initialize the Hush Encryption Engine in Java as follows:
+
+<blockquote><pre>
+<code>
+import java.util.Vector;
+
+import com.hush.hee.HushEncryptionEngineCore;
+
+
+public class Encrypt
+{
+		public static void main(String argv[]) throws Exception
+		{
+			String input = "My original text";
+			
+			HushEncryptionEngineCore hee = new HushEncryptionEngineCore();
+			Vector recipients = new Vector();
+			recipients.addElement("myhushmailaccountaddresshere@hushmail.com");
+			
+			// Makes the output be a string
+			hee.useArmor(true);
+			
+			byte[] encrypted = hee.encrypt(input.getBytes("UTF-8"), recipients, null);
+			
+			String encryptedString = new String(encrypted, "UTF-8");
+			
+			System.out.println(encryptedString);
+		}
+}
+
+</code></pre></blockquote>
+
+</body>
+</html>

@@ -1,0 +1,391 @@
+<html>
+<head>
+<style>
+H1,H2,H3,H4,small {
+font-family: Verdana;
+}
+
+H1 { color: #ef8f2f; font-size: 24px; margin-bottom: 0px;}
+small { color: #ef8f2f; font-size: 18px; }
+H2 { color: #3f727f; font-size: 18px; margin-top: 35px; }
+H3 { color: #005f8f; font-size: 12px; margin-left: 10px;}
+a  { color: #990000; }
+
+pre {
+margin-left: 15px;
+color: #00334c;
+font-family: Arial;
+font-size: 12px;
+}
+
+ol {
+margin-left: 15px;
+color: #00334c;
+font-family: Arial;
+font-size: 12px;
+}
+
+body {
+margin-left: 15px;
+color: #00334c;
+font-family: Arial;
+font-size: 12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Hush OpenPGP Java Developer Guide</h1>
+
+<h2>Contents</h2>
+<pre>
+<a href="#ImportingKeys">Importing and Using Keys</a>
+<a href="#GeneratingKeys">Generating Keys</a>
+<a href="#EncryptingData">Encrypting Data</a>
+<a href="#DecryptingData">Decrypting Data</a>
+<a href="#SignBinary">Creating a Signature on Binary Data</a>
+<a href="#VerifyBinary">Verifying a Signature on Binary Data</a>
+<a href="#SignDetached">Creating a Detached Signature</a>
+<a href="#VerifyDetached">Verifying a Detached Signature</a>
+<a href="#SignText">Creating a Canonical Signed Text Message</a>
+<a href="#VerifyText">Verifying a Canonical Signed Text Message</a>
+</pre>
+
+Detailed information on using the Hush Java OpenPGP libraries
+is available in the javadoc API documentation.  This document is a quick start
+guide intended to let you know which classes you need to use to perform certain
+tasks.  Once you get an idea of what you need to do, please read the API
+documentation for those classes for detailed information.
+<br>
+<br>
+All of the code examples can be found in <code>com.hush.pgp.tests.DeveloperGuideExamples</code>.
+To run the examples, be sure that the pgptest directory is in your current working directory, and
+run the command <code>java com.hush.pgp.tests.DeveloperGuideExamples</code>.
+
+<h2><a name="ImportingKeys">Importing and Using Keys</a></h2>
+
+The <code>com.hush.pgp.Keyring</code> object is used to import and manage keys.
+You can instantiate and load a key ring from a file as follows, where
+<code>fileStream</code> is an input stream from the file containing the key ring:
+<blockquote><pre>
+<code>Keyring myKeyring = new Keyring();
+myKeyring.load(fileStream);
+</code></pre></blockquote>
+This will load all the information in the key ring, and place it in the
+following structure.
+
+<ul>
+<li>Keyring (<code>com.hush.pgp.Keyring</code>)
+	<ul>
+	<li>Main keys (<code>com.hush.pgp.Key</code>)
+		<ul>
+		<li>Signatures directly on the main key (<code>com.hush.pgp.Signature</code>)</li>
+		<li>Subkeys (<code>com.hush.pgp.Key</code>)
+			<ul>
+			<li>Signatures on Subkey (<code>com.hush.pgp.Key</code>)</li>
+			</ul>
+		</li>
+		<li>User IDs (<code>com.hush.pgp.UserID</code>)
+			<ul>
+				<li>Signatures on the user ID (<code>com.hush.pgp.Signature</code>)</li>
+			</ul>
+		</li>
+		<li>User Attributes (<code>com.hush.pgp.UserAttribute</code>)
+			<ul>
+				<li>Signatures on the user attribute (<code>com.hush.pgp.Signature</code>)</li>
+			</ul>
+		</li>
+		<li>Trust info</li>
+		</ul>
+	</li>
+	</ul>
+</li>
+</ul>
+The keys that make up the top level of the tree can then be accessed and
+used by the <code>getKey(byte[], boolean)</code> and
+<code>getKeys(String, boolean)</code> methods, searching on
+key ID and user ID respectively.  There is no distinction between public key
+objects and secret key objects.  Public key objects simply have secret data
+omitted, and an exception will be thrown if you try to retrieve it.
+<br>
+<br>
+By default, all self-signatures on any key that is accessed will be verified
+at the time of access.  An exception will be thrown if any self-signatures fail
+or if there are any subkeys, user IDs, or user attributes that lack a self-
+signature.  To disable this behavior, use the <code>setVerifySelfSignatures(boolean)</code>
+method.
+<br>
+<br>
+All keys are retrieved by reference.  That means that any changes made to the
+<code>Key</code> objects will be retained in the <code>Keyring</code> object.
+After changes are made, they can be written out using the
+<code>save(InputStream, boolean, boolean)</code> and <code>toString()</code> methods.
+<br>
+<br>
+If you are using a secret key that is decrypted, you must decrypt it first
+using the <code>decryptSecretKey(byte[])</code> method, otherwise a <code>
+com.hush.util.UnrecoverableKeyException</code> will be thrown when there is
+and attempt to use the encrypted secret key material.
+<h2><a name="GeneratingKeys">Generating Keys</a></h2>
+
+The <code>com.hush.pgp.KeyGenerator</code> object is used to create new keys.
+You can instantiate and use it to create a set of keys as follows:
+
+<blockquote><pre>
+<code>KeyGenerator myKeyGenerator = new KeyGenerator(random);
+myKeyGenerator.addPreferredSymmetricAlgorithm(PgpConstants.CIPHER_AES256);
+myKeyGenerator.addPreferredSymmetricAlgorithm(PgpConstants.CIPHER_TWOFISH);
+Key myKey = myKeyGenerator.generateKey("mynewkey@openpgp.hush.com", 
+"my passphrase".getBytes());
+</code></pre></blockquote>
+
+The resulting key will contain a DSA main key, a user ID packet, and an ElGamal
+subkey.  It can then be added to a key ring and exported as follows:
+
+<blockquote><pre>
+<code>Keyring myNewKeyring = new Keyring();
+myNewKeyring.addKey(myKey);
+System.out.println(myNewKeyring.toString());
+</code></pre></blockquote>
+
+The <code>KeyGenerator</code> object will only generate DSA keys with ElGamal
+subkeys.  If you want finer control over your key creation, you can create
+a <code>Key</code> object directly.  For example, this would generate a
+very simple RSA key.
+
+<blockquote><pre>
+<code>Key myRSAKey = new Key(4, System.currentTimeMillis()/1000,
+PgpConstants.CIPHER_RSA, 1024, random);
+Signature mySig = new Signature();
+
+// Any number of flags can be set on the signature here
+mySig.setPreferredSymmetricAlgorithms(
+new byte[]{PgpConstants.CIPHER_AES256, PgpConstants.CIPHER_TWOFISH}, true,
+false );
+
+myRSAKey.sign(mySig, myRSAKey, PgpConstants.SIGNATURE_DIRECTLY_ON_KEY,
+System.currentTimeMillis()/1000, random);
+</code></pre></blockquote>
+
+While this process offers more flexibility, it's easy to generate a key that
+won't be interpreted well by other OpenPGP applications, so unless you're very
+familiar with OpenPGP key structures, you are advised to use the
+<code>KeyGenerator</code> object.
+
+<h2><a name="EncryptingData">Encrypting Data</a></h2>
+
+Data is encrypted using the <code>com.hush.pgp.io.PgpMessageOutputStream</code>.
+This class can be used to encrypt data using public keys, passphrases, or a
+combination of both.  Here is an example of encrypting some text to a single
+public key and sending the result to the system output.
+
+<blockquote><pre>
+<code>ByteArrayOutputStream pgpMessageBuffer = new ByteArrayOutputStream();
+PgpMessageOutputStream pgpOut = new PgpMessageOutputStream(pgpMessageBuffer, random);
+pgpOut.setUseArmor(true);
+pgpOut.addRecipient(myKey);
+pgpOut.write("my message\r\n".getBytes());
+pgpOut.close();
+System.out.write(pgpMessageBuffer.toByteArray());
+</code></pre></blockquote>
+
+This code would encrypt the same message using a simple password, and the
+Twofish algorithm.
+
+<blockquote><pre>
+<code>pgpMessageBuffer = new ByteArrayOutputStream();
+pgpOut = new PgpMessageOutputStream(pgpMessageBuffer, random);
+pgpOut.setUseArmor(true);
+pgpOut.setSymmetricCipher(PgpConstants.CIPHER_TWOFISH);
+pgpOut.addPassword("my password".getBytes());
+pgpOut.write("my message\r\n".getBytes());
+pgpOut.close();
+System.out.write(pgpMessageBuffer.toByteArray());
+</code></pre></blockquote>
+
+There are a number of setter methods that can be used after construction to
+specify the behavior of the stream.  These are explained in the Javadoc.
+<br>
+<br>
+It is important to always close the stream after you are finished, otherwise all
+the data may not be written.
+
+<h2><a name="DecryptingData">Decrypting Data</a></h2>
+
+Data is decrypted using the <code>com.hush.pgp.io.PgpMessageInputStream</code>.
+After constructing an instance of this class, you should supply it with keys,
+key rings, and/or passwords that can be used to decrypt the data.  The stream
+will attempt every available method of decryption.  It will also automatically
+determine whether or not the data is ASCII armored.  Here is an example of code
+that reads from standard input and attempts to decrypt the input using the keys
+on a key ring, writing the decrypted result to standard output.
+
+<blockquote><pre>
+<code>PgpMessageInputStream pgpIn = new PgpMessageInputStream(
+new ByteArrayInputStream(encryptedMessage));
+pgpIn.addKeyring(myNewKeyring);
+byte[] b = new byte[1024];
+int x;
+while ((x = pgpIn.read(b)) != -1)
+{
+	System.out.write(b, 0, x);
+}
+</code></pre></blockquote>
+
+<h2><a name="SignBinary">Creating a Signature on Binary Data</a></h2>
+
+The <code>com.hush.pgp.io.PgpMessageOutputStream</code> class is also used to
+generate signatures on data.  For example, the following code shows a previous
+example of encrypting data, with the additional step of creating a signature on it:
+
+<blockquote><pre>
+<code>PgpOutputStream pgpOut = new PgpOutputStream(System.out, random);
+pgpOut.addRecipient(myKey);
+pgpOut.addOnePassSigner(mySigningKey);
+pgpOut.write("my message\r\n".getBytes());
+pgpOut.close();
+</code></pre></blockquote>
+
+The signature will be appended to the output.  If you want to generate signed
+data without encrypting it, don't add any recipients or passwords, and use the
+<code>setPlaintext(boolean)</code> method to specify that it is acceptable for
+unencrypted data to be generated.  This prevents code using the class from
+accidentally streaming data without encrypting it.  Example:
+
+<blockquote><pre>
+<code>pgpMessageBuffer = new ByteArrayOutputStream();
+pgpOut = new PgpMessageOutputStream(pgpMessageBuffer, random);
+pgpOut.setUseArmor(true);
+pgpOut.addRecipient(myKey);
+pgpOut.addOnePassSigner(myKey);
+pgpOut.write("my message\r\n".getBytes());
+pgpOut.close();
+System.out.write(pgpMessageBuffer.toByteArray());
+</code></pre></blockquote>
+
+<h2><a name="VerifyBinary">Verifying a Signature on Binary Data</a></h2>
+
+The <code>com.hush.pgp.io.PgpMessageInputStream</code> class is also used to
+generate signatures on data.  For example, the following code shows a previous
+example of decrypting data, with the additional step of verifying a signature on it:
+
+<blockquote><pre>
+<code>pgpIn =	new PgpMessageInputStream(new ByteArrayInputStream(pgpMessageBuffer.toByteArray()));
+pgpIn.addKeyring(myNewKeyring);
+b = new byte[1024];
+while ((x = pgpIn.read(b)) != -1)
+{
+	System.out.write(b, 0, x);
+}
+pgpIn.close();
+Signature[] mySignatures = pgpIn.getSignatures();
+if (mySignatures.length != 1)
+{
+	System.out.println("expected to find exactly one signature");
+}
+else
+{
+	try
+	{
+		mySignatures[0].finishVerification(myKey);
+		System.out.println("verification succeeded");
+	}
+	catch (InvalidSignatureException e)
+	{
+		System.out.println("verification failed");
+	}
+}
+
+</code></pre></blockquote>
+
+<h2><a name="SignDetached">Creating a Detached Signature</a></h2>
+
+If you want to generate a detached signature, use a <code>com.hush.pgp.Signature</code>
+object directly.  In this example, the signature is created and written to standard output:
+
+<blockquote><pre>
+<code>Signature mySignature = new Signature();
+mySignature.startSigning(myKey,
+Signature.SIGNATURE_ON_BINARY_DOCUMENT,
+System.currentTimeMillis() / 1000);
+mySignature.update("my message\r\n".getBytes());
+mySignature.finishSigning(random);
+String mySignatureString = mySignature.toString();
+System.out.println(mySignatureString);
+</code></pre></blockquote>
+
+<h2><a name="VerifyDetached">Verifying a Detached Signature</a></h2>
+
+Verifying a detached signature also uses the <code>com.hush.pgp.Signature</code>
+class. In this example, the signature is loaded from standard input and verified.
+Note that only the first signature loaded from standard input is verified:
+
+<blockquote><pre>
+<code>mySignatures =
+Signature.load(new ByteArrayInputStream(mySignatureString.getBytes()));
+if (mySignatures.length != 1)
+{
+	System.out.println("expected to find exactly one signature");
+}
+else
+{
+	mySignature = mySignatures[0];
+	mySignature.startVerification();
+	mySignature.update("my message".getBytes());
+	try
+	{
+		mySignature.finishVerification(myKey);
+		System.out.println("verification succeeded");
+	}
+	catch (InvalidSignatureException e)
+	{
+		System.out.println("verification failed");
+	}
+}
+</code></pre></blockquote>
+
+<h2><a name="SignText">Creating a Canonical Signed Text Message</a></h2>
+
+Signed text messages suitable for emailing can be generated using the
+<code>com.hush.pgp.CanonicalSignedMessage</code> class.  The following example
+generates such a message and writes it to standard output:
+
+<blockquote><pre>
+<code>CanonicalSignedMessage mySignedMessage = new CanonicalSignedMessage();
+mySignedMessage.setText("this is my message\r\n");
+mySignedMessage.signMessage(myKey, random, System.currentTimeMillis() / 1000);
+String mySignedMessageString = mySignedMessage.getSignedMessage();
+System.out.println(mySignedMessageString);
+</code></pre></blockquote>
+
+<h2><a name="VerifyText">Verifying a Canonical Signed Text Message</a></h2>
+
+Signed text messages can also be verified using the
+<code>com.hush.pgp.CanonicalSignedMessage</code> class.  This example
+demonstrates the verification of such a message with a particular key.
+
+<blockquote><pre>
+<code>mySignedMessage = new CanonicalSignedMessage();
+mySignedMessage.setSignedMessage(mySignedMessageString);
+try
+{
+	Signature[] verifiedSigs = mySignedMessage.verifySignatures(myKey, true);
+	if (verifiedSigs.length > 0)
+	{
+		System.out.println("verification succeeded");
+	}
+	else
+	{
+		System.out.println("no signatures by the specified key were found");
+	}
+}
+catch (InvalidSignatureException e)
+{
+	System.out.println("verification failed");
+}
+</code></pre></blockquote>
+
+</body>
+</html>

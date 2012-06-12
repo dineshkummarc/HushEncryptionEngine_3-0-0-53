@@ -1,0 +1,16 @@
+package com.hush.hee;
+
+public class BadRequestException extends KeyStoreException
+{
+	private static final long serialVersionUID = -2884301065562070228L;
+
+	public BadRequestException()
+	{
+		super();
+	}
+
+	public BadRequestException(String message)
+	{
+		super(message);
+	}
+}

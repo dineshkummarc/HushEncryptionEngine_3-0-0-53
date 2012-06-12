@@ -1,0 +1,21 @@
+For those who wish to verify that the class files downloaded when accessing
+Hushmail are genuine, they can be compared against class files compiled from
+source using the following tools.
+
+Sun JDK on Ubuntu (sun-java6 6-16-0ubuntu1.9.04)
+Proguard 4.1 (http://proguard.sourceforge.net)
+
+Usage of these tools can be determined from the included Makefile and
+proguard.conf.  Note that the signing steps in the Makefile cannot be
+accomplished, and so the class files must be compared individually.  You cannot
+compare the entire archive.
+
+The Java applet archive used by Hushmail is located here:
+
+https://www.hushmail.com/shared/HushEncryptionEngine.jar
+
+Please ensure that you are comparing the same versions.  Sometimes the release
+of source code may lag a few days behind the update of Hushmail.
+
+Questions can be directed here: https://www.hushmail.com/contact
+

@@ -1,0 +1,872 @@
+2011-05-16 Release 3.0.0.53.  No change except code signing certificate. -sbs
+
+2011-03-04 Release 3.0.0.51.
+
+2011-03-03 Fix an issue with the Compression Input Stream where it was not trying to read
+all bytes until it either hits end of stream or the bytes asked for. The code now will attempt
+to read the bytes as many times as it can to obtain the correct number of bytes and this fix
+many authentications issues on the server.
+
+2010-12-08 Changed default size for new signing keys to 2048 bits.
+
+2010-11-17 Fix a serious issue in the Signature Subpacket that causes self-verification to fail
+on any key that contains a critical hashed sub-packet.
+
+2010-09-03 Advanced support for RSA keys This checking allows us to store new private keys
+in separate entries and not in a single entry as with my last check-in. The reason for my
+original design was that older clients would only get the latest private key from the server
+(Which broke support for older emails) and I was able to change the server to override that
+ request and always return all the private keys, which fixed older clients and they now
+ correctly use all the keys to decrypt and verify both new and old emails.
+
+2010-08-27 This update includes the following new features and fixes;
+1. We can generate new private keys and add them to the users current list. 
+2. The RSA key upgrade to RSA algorithm from RSA Encrypt and Sign only algorithms.
+3. Keys now store their use type in the self signature and this helps determine if a key is for encryption or signing.
+4. When a new public key is stored all existing public keys have their main key set to false and the new key is set to true.
+5. Better handling of public key retrieval so that we always return the main key if we do not have a key id but then return the key if we do have the key id
+6. The public key retrieval on signature verification will try to pass both signer and key id if both are available. The old code would send just the signer if specified and would ignore the key id.
+7. Fixed an issue with saving a new private key with the same private user alias where this would not happen in the older code.
+
+2010-08-12 A minor fix to ensure that if a character encoding is not enclosed in the signature that we do default to UTF-8
+
+2010-08-12 15:31:18 -0700 (Thu, 12 Aug 2010) | 1 line
+
+Fixed a bug where if the encoding is never set the signature update function fails
+
+2010-06-09 Built 3.0.0.48, possibly for internal use only.
+
+2010-06-09 Added the "authenticatedUserAlias" property on the PublicKeyInformation
+object, so a client using the SOAP protocol can know if it needs to re-authenticate or not. -sbs
+
+2010-02-16 Switched to Zimbra 6.0.4, and upgraded many Jars in java_dependencies. -sbs
+
+2009-12-30 Separated out some of the functionality from
+HushEncryptionEngineCore.processSecureMessage into wrapOutputStreamForEncryption,
+which is also made public, as it is a useful method to wrap any output stream
+in a PGP encrypted stream.  Made into version 3.0.0.46, so this can be used for
+some internal purposes. -sbs
+
+2009-12-09 Removed unnecessesary administrative operations
+from HushEncryptionEngineCore.  Those functions are now
+performed through DataAccess. -sbs
+
+2009-10-28 Release 3.0.0.44. -sbs
+
+2009-10-16 Additional decryption keys for domains are now retrieved
+as part of a public key lookup request.  Additional decryption keys
+and for use by Hushmail Business domains that require that all
+their email be encrypted to a special extra key for archival
+purpoases.  Remove some dead code. -sbs
+
+2009-06-09 Release 3.0.0.41. -sbs
+
+2009-05-28 Added HEE.isPassphraseExpired() and extended it down to the
+Axbridge plugin.  Removed changeLoginCredentials from storeLoginCredentials,
+as it checks the old password anyway. -sbs
+
+2009-03-13 When authenticating, clear any cached public key records, as they
+might contain generated password info that might be different under the newly
+authenticated address. -sbs
+
+2009-03-05 Modified HushEncryptionEngineCore so that it is no longer necessary
+to call the init() method.  The object will automatically use keys1.hush.com
+and a new SecureRandom instance if you do not.
+Added getVersionAsLong and getVersionAsString for easier version checking.
+Removed every import *, and added a new BeanInfo class in an attempt to stop
+all the BeanInfo requests coming from the applet.
+More work on Axbridge. -sbs
+
+2009-02-06 Removed some debug code that was left in SecureMessage. -sbs
+
+2009-02-02 Added more axbridge wrappers, as boolean does not work right, we
+need to use Boolean.
+Added proper escaping of XML entitities to AuthInfo, and added the
+com.hush.org.apache.commons.lang package to deal with it.
+Maded canonicalizePassword in PasswordUtils public so it could be used
+in QuestionAndAnswer method isValidAnswer.  Also added isValidQuestion.
+Added getAuthInfoEmailHeaderName and getAuthInfoEmailHeaderValue to
+SecureMessage. -sbs
+
+2009-01-29 Created two new Exception subclasses, UnableToConnectToKeyserverException
+and NeedsAuthenticationException which fit existing interfaces, but allow
+calling code to distinuish simple connection failures from more complex errors
+and to detect when "authenticate()" needs to be called.  Changed getLastError
+in axbridge interface to getLastErrorMessage and getLastErrorTrace. -sbs
+
+2009-01-28 Added getVersion to Axbridge interface. -sbs
+
+2009-01-23 Set default character encoding on SecureMessage object to UTF-8.
+In com.hush.hee.net.KeyserverClient, set keys1.hush.com as the default
+keyserver, so it doesn't have to be set explicitly.
+In HushEncryptionEngineCore, require that if setKeyserverImplementation is
+called, it must be called before any parameters be set that would impact it.
+If called after any of those parameters are set, exception will be thrown.
+Checked in new Axbridge Sun Java HushEncryptionEngineAxbridge.dll and associated
+HushEncryptionEngineAxbridge.jar. -sbs
+
+2008-12-23 Added HEE.checkCanEncrypt, which returns CanEncryptResult object,
+which distinguishes between objects with no encryption method and aliases
+which are denied due to deactivation. -sbs
+
+2008-08-06 Release 3.0.0.33. -sbs
+
+2008-11-24 Added beginning of DLL that uses Sun VM.  See the NOTES.txt in
+the axbridge directory. -sbs
+
+2008-11-04 Currently, signatures are made without checking the preferred
+digest algorithm in the key preferences.  Started to add some code to do that
+but bogged down because need to know the user ID when signing.  See
+Signature.java for commented out changes. -sbs
+
+2008-08-06 Release 3.0.0.32. -sbs
+
+2008-07-07 Changed some "exception should never happen" error messages for
+exceptions that actually could happen to be "KeystoreException, account may
+be deactivated" instead. -sbs
+
+2008-07-06 Added setPgpCertificateAuthorityCertificate to applet. -sbs
+3.0.0.30 sunjar (not cab, fulljar) recompiled. -sbs
+
+2008-07-02 Added the ability to override the default signing certificate,
+via the setPgpCertificateAuthorityCertificate method.  Built
+3.0.0.30 with this method. -sbs
+
+2008-04-29 Updated CanonicalSignedMessage to recognized a whitespace-only line
+as the end of the headers, since Enigmail sometimes leaves a space there.
+-sbs
+
+2008-03-20 Fixed a bug in CanonicalSignedMessage which identified the start of
+a signature even if there was leading whitespace.  Leading whitespace sometimes
+indicates quoted text in emails, so signature data with leading whitespace
+should be ignored. -sbs
+
+2008-03-19 Updated Kms to default to RSA_SIGN_ONLY/RSA_ENCRYPT_ONLY.
+See below. -sbs
+
+2008-03-19 Release 3.0.0.29.
+
+2008-03-18 Changed KeyGenerator to default to RSA_SIGN_ONLY/RSA_ENCRYPT_ONLY
+instead of RSA/RSA.
+Added some convenience methods for applets running in Opera, since Opera can't
+handle passing complex objects back into an applet.
+-sbs
+
+2008-03-05 Release 3.0.0.28.
+
+2008-03-05 Made the getPrivateKeyInformation keyserver method use the "readonly"
+keyserver in KeyserverClient.
+Fixed LineInterpolation to allow secrets that start with a byte that has the
+first bit set. -sbs
+
+2008-02-29 In KMS and HEE, clear the private key record for an alias if there
+is an error recovering it, so that subsequent authentication attempts won't
+use the cached record. -sbs
+
+2008-02-28 Added a check in Signature to be sure the verifying key is the
+correct class, to avoid ClassCastException.
+HEE.authenticate will now always throw an UnrecoverableKey exception if it
+gets a null value from KMS.getPrivateKey.
+KMS.getPrivateKey will now throw an UnrecoverableKey exception if the key ID
+on the private key does not match the key ID of the public key retrieved from
+the keyserver.
+Fixed some situations where exceptions were still not being wrapped
+correctly. -sbs
+
+2008-02-27 The HEE.sign(SecureMessage) method writes a signed PGP message to
+the outputStream on the message.  This is not always what we want, for example,
+in the sendFileToURL methods.  So the HEE.generateSignatures(SecureMessage)
+method was added, which does not alter the message, only generates sigs and
+passes the message straight through.
+Renamed some HEE.encrypt and HEE._encrypt methods to processSecureMessage, as
+they can be used just for signing as well.  Removed many throws declarations for
+IOException, and caught MissingSelfSignatureException and
+InvalidSignatureException and wrapped them where applicable.
+Added wrappability to NoEncryptionMethodException, and throw it if
+InvalidSignatureException or MissingSelfSignatureException is caught when
+using a certificate.
+Added some convenience methods for creating Signatures with Date and current
+time.
+-sbs
+
+2008-02-26 Cleaned up the getEncryptionObjects method, and lowercased and
+trimmed all aliases in the recipients array. Updated PGP armor version number
+to 3.0. -sbs
+
+2008-02-25 Deleted the com.hush.pgp.serialization package. -sbs
+
+2008-02-24 Updated KMS with faster object encryption, in
+com.hush.hee.util.ObjectEncryption.  Note the internal password must now
+be 16 bytes. -sbs
+
+2008-02-23 Small fix to RequestConnection so that status "Denied" or
+"Bad Request" in an Error element throws the relevant exception instead of a
+generic KeyStoreException. -sbs
+
+2008-02-22 Fixed some bugs in the applet classes that could cause NPE,
+or use wrong character encodings. Modifications to HEE and KMS init and
+constructor code to allow use of the empty constructor, which is useful for
+working with subclasses.
+Updated to use callback class for SecureRandom so it doesn't ever get
+Serialized (unless it is Serialized in the callback class). -sbs
+
+2008-02-20 Prevent an NPE in the Applet.stop() method.  Modify HEE
+changePassphrase and createKeyRecord methods so that they don't change
+authentication state is the HEE is already authenticated under another identity.
+In that situation, also flush the private keys for the alias targeted by those
+operations. -sbs
+
+2008-02-19 Package reorganization to help separate PGP from HEE.  Created an
+ExceptionWrapper class with a static method to facilitate supporting both
+Java 1.1 Exceptions (no wrapping), and exception wrapping as in Java 1.2 and
+higher.  Every exception class now has a 1.1 compatible ".java.1.1" file, which
+the Makefile will use when compiling for Java 1.1.  Eliminated some unecessary
+series of catch clauses in HEE, and replaced with finally clauses, and removed
+instaces where Throwable was caught.  Fixed a bug where the empty string ""
+could get passed as an alias in HEE.getSignerKey.  Renamed KMS.getPublicKey
+to getPublicKeyFromRecord to avoid ambiguity.  Fixed setRandomSeedUpdateCycle
+argument name. Made UnrecoverableKeyException extend RuntimeException instead
+of SecurityException, because SecurityException is really for other things.
+PassphraseComponents.makeShadows does not need to throw
+UnrecoverableKeyException.
+Added LegacyDataFormatException, so it is different from
+pgp.DataFormatException.  Moved DataFormatException from io package.
+Added an init(Log) method to CommonsLoggerDelegate.
+Reduced log levels of various items to DEBUG.  In CommonsLoggerDelegate,
+translate INFO to info(), not warn().
+In CommonsLoggerDelegate, log throwables if included.
+Added randomSeedUpdateOnFinalize HEE property.
+-sbs
+
+2008-02-15 Fixed a bug in KeyManagmentServices so that passphrase changes
+still work when public key caching is disabled.
+Fixed typo in newMailserverPassword attribute.
+Changed UnrecoverableKey message text to match that used in 2.5.
+Fixed a bug in which getPassphraseExpirationTime did not convert seconds to
+milliseconds before constructing a Date. -sbs
+
+2008-02-12 Made the HEE.decrypt(byte[], Hashtable, byte[][], String[]) method
+private.  Renamed remaining allVerifiedSigners/allFailedSigners to
+validSigners/invalidSigners, except in one method in hee_soap project.
+Renamed get/setArmor to get/setUseArmor in SecureMessage.  Renamed the
+"textWithoutSignature" argument in verify methods to "content" to match WSDL
+usage.  Added com.hush.hee.keyserver to "packages" file for javadoc.
+Updated Proguard parameters in Makefile.  Started using "java_dependencies"
+for shared libs. -sbs
+Added a signature verification operation to HEE.authenticate, so that auth
+will always fail if the private key does not match the public key.  This allowed
+removal of the identical functionality from the web_services project.
+Throw RuntimeException in HEE.revoke and HEE.storeLoginCredentials methods -
+they are deprecated.  Made some protected vars private in HEE.  Killed several
+unused PARAM_ constants in HEE.
+Stripped "LoginCredentials" related operations down to simple
+"changeEmailPassword" method on keyserver, which is all that really needs to be
+done anymore.
+Added some loading convenience methods to pgp.Signature, and added an
+informative exception to SignatureOutputStream.  Fixed an inaccurate log error
+message in PgpMessageInputStream. -sbs
+
+
+2008-02-07 Fixed a bug in PgpMessageOutputStream where in some situations
+calling close() would also close the underlying stream, which is not the
+desired behavior.
+Added use of a finally clause in HEE.sendFileToUrl to ensure all file streams
+get closed.
+Fixed a bug in HEE.sendFileToUrl which was not treated null password and
+recipient arrays properly.
+Fixed a signature verification bug that could throw an out of bounds error on
+a bad signature.
+-sbs
+
+2008-02-06 Authenticate before changing a passphrase, so that the you have the
+auth to save a passphrase component.  Restrict passphrases to always start with
+a byte without the high bit set, as otherwise passphrase recovery can break.
+Added some convenience methods to Keyring and PgpMessageOutputStream.  Fixed a
+bug where external certificates were getting ignored when encrypting messages.
+Fixed a bug in encrypt file where encrypting to passwords only caused NPE.
+Removed replicated decryption in decryptText.  Fixed a missing entry in an
+array in PgpConstants. -sbs
+
+2008-02-05 Removed customerID field from AuthInfo, as it is probably not going
+to be used.  Refactored the main encrypt(SecureMessage, boolean) method in
+HEE to reduce the nested if and for statements.  If a public key is looked up
+by key ID, don't check the status of the user in the response.  More unit test
+work. Fixed PublicKeyLookup to handle generatePasswordBodyTemplate and
+generatedPasswordSubjectTemplate. -sbs
+Convert DeniedException to UnrecoverableKeyException on authentication. -sbs
+
+2008-02-04 Ongoing work related to GeneratePassword handling and signed
+public key lookup requests. -sbs
+
+2008-02-03 Set signPublicKeyLookup request directly on the keyserver object
+in HEECore, so no need to pass auth alias to KMS.  In KMS, make sure that any
+generatedPasswordRecipient has a valid public key. Added email template
+fields to GeneratedPassword. -sbs
+
+2008-01-31 Refactored to separate keyserver functions completely from the V2
+XML protocol. -sbs
+
+2008-01-23 Fixed some NullPointerExceptions that can be resulted when the
+key records in KeyManagementServices are serialized.  Updated some test cases.
+-sbs
+
+2008-01-22 Always disable compression in ObjectEncryption.  Added some
+preliminary files for a key server interface.
+Merged changes from the patches-non-utf8-signed-messages branch. -sbs
+
+2007-08-22 Use EncryptedPrivateKeyPackage to deal with such data.  Changed signerAlias
+to authenticatedAlias where appropriate. -sbs
+
+2007-08-19 Release 2.5.0.9 ??? Date in error??
+
+2007-09-19 Added additional flexibility regarding character encodings in
+signatures.  It is now optional that the default character encoding should
+override values in headers.  In several places, String.getBytes() was replaced
+with a Conversions call using UTF-8. -sbs
+
+2007-08-29 Release 2.5.0.8
+
+2007-08-29 Fixes problem where MSVM only recognizes UTF8, not UTF-8.  Fixed
+problem with NullPointerException when character encoding not set. -sbs
+
+2007-08-28 Fixes related to precedence of character encoding specification in
+CanonicalSignedMessage. -sbs
+
+2007-08-23 Added methods for signing and verifying cleartext signed messages as
+byte arrays, in order to allow for the passing of messages in character
+encodings other than UTF-8 in UTF-8 encoded XML documents (SOAP). -sbs
+
+2007-06-07 Updated code signing certificates. -sbs
+
+2007-03-02 Fixed a bug in Key where getAllEncryptionKeys was returning all
+keys, not just encryption keys.
+
+2007-01-03 Fixed signPublicKeyLookupRequests in HEE and KMS -toby
+
+2006-11-27 No longer throw IllegalArgumentException if same alias is
+specified twice in a call to KeyManagementServices.getEncryptionObjects
+-toby
+
+2006-11-23 Eliminated some unused parameters from KMS.makeLegacyPrivateAlias.
+-sbs
+
+2006-10-23 Release 3.0.0.14 RC 2 -sbs
+
+2006-10-23 Deleted make_proguard_conf.pl because newer proguard supports
+wildcards and every method doesn't have to be explicitly exempted from
+obfuscation. -sbs
+
+2006-10-06 Release 3.0.0.14 RC 1 -sbs
+
+2006-10-06 Added private createSecureMessage to HEECore so that internally
+created SecureMessage objects will be initialized with HEE fields like
+anonymous and armor. -sbs
+
+2006-10-05 Fixed various risks of NullPointerExceptions in HEE.  SecureMessage
+and QuestionAndAnswer array properties now only ever return 0 length arrays,
+never null.  Add Conversions2.arrayToVector and Conversions2.vectorToStringArray
+convenience functions.  Changed QuestionAndAnswer.recipients to
+QuestionAndAnswer.recipientAliases to match SecureMessage. -sbs
+
+2006-09-29 Created QuestionAndAnswer wrapper for the applet.  Relase 3.0.0.13.
+-sbs
+
+2006-09-28 Release 3.0.0.12. -sbs
+
+2006-09-28 Added support in setParameter on HEECore for long.  Added getters
+and setters for useProgressIndicators. -sbs
+
+2006-09-21 Fixed a NullPointerException in serialization of KMS. 3.0.0.11. -sbs
+
+2006-09-18 Fixes related to signing public key update requests so that they
+won't create a infinite loop. 3.0.0.10. -sbs
+
+2006-09-12 In PgpMessageOutputStream, public key encrypted session key packets
+now always come before symmetric key encrypted session key packets, since
+otherwise some clients ask for a password even though a private key is already
+available.  Fixed reversed offset and len values in PgpMessageInputStream.read.
+Added com.hush.pgp.serialization package.  Version incremented to 3.0.0.9. -sbs
+
+2006-09-08 Extensive rearrangement to the way parameters to the engine are
+handled.  Added simpler instantiation options than previously existed.  Updated
+the getParameterInfo array with details on accepted parameters. -sbs
+
+2006-09-07 Changes to make public key updates (key creations) take an encryption method
+parameter (None, Web, or Normal).  Incremented version to 3.0.0.7.
+
+2006-08-30 Modified canEncrypt to remove question & answer, certificate recipients
+from the list of aliases.  Added wrapper object for SecureMessage which is used
+by the applet.
+
+2006-08-28 Added sendFileToUrlWithSecureMessage method to the HushEncryptionEngine
+applet.
+
+2006-08-24 All internalPassword stuff now happens only in the
+setInternalPassword and writeObject methods.  There is not an attempt to keep
+keys encrypted before they get serialized, as it would've required a lot of
+cloning and extra code.  Added generated serialVersionUID fields to all
+serializable objects.  -sbs
+
+2006-08-23 Method HushEncryptionEngineCore.getKeys now does not throw an
+exception if there are missing aliases.  TODO: Make sure encrypt methods throw
+exceptions if encryption methods are not available for all recipients. -sbs
+
+2006-08-22 Converted all parameters that refer to lists of verified and
+un-verifiable signers to be named validSigners and invalidSigners, for
+consistency with WSDL API that is already in use by Hushmail.  -sbs
+
+2006-08-18 Added "internal password" to KeyManagementServices.  If this is set,
+all keys will be kept encrypted except when being used, and the random seed
+will be encrypted and stored upon serialization.  The "setInternalPassword"
+method MUST be used if KeyManagementServices will be serialized.  It must be
+called when the object is constructed, and after each deserialization.  This
+is because unencrypted private key and random seed data is now transient
+and will not be serialized.  Various updates to previous changes for Java 1.1
+compat.  Hid HEE methods that take Key objects as parameters.  Added
+general test class, com.hush.test.hee.LiveHushEncryptionEngineTestCase, which
+can be used to test the HushEncryptionEngineCore with no setup.
+-sbs
+
+2006-08-09 Added a canEncrypt method to the Hush Encryption Engine, and updated
+the AuthInfo to include a message body and a subject for emailed generated
+passwords, instead of just a message body.
+
+2006-07-25 Added SecureMessage functionality to HushEncryptionEngineCore.  This
+allows for encryption options to be set in a SecureMessage (aliases,
+passwords, etc) which is then passed to the various encryption and signing
+methods.  Added question & answer encryption into the HEE and the ability
+to use automatically generated passwords depending on key server settings
+fror a customer.  Public key lookup requests will now return one of three
+encryption methods for an alias - none (key should not be used for encryption),
+web (Hushmail Express style encryption should be used - builds authInfo xml),
+or normal (Normal PGP encryption - default).  Incremented the version number
+to 3.0.0.0.  Added the following classes to com.hush.hee:  AuthInfo,
+GeneratedPassword, QuestionAndAnswer, SecureMessage.  Added StringReplace
+class to com.hush.util.
+
+2006-03-20 In PgpPacketInputStream, the offset value in read was being ignored.
+Changed symmetric key input stream handling to allow multiple algorithms to be
+set if there are multiple session key packets.  Previously, they were expected
+to all be the same or a warning was given and the most recent one found was
+tried.  This caused a problem because if there was a session key that did not
+decrypt properly due to a wrong passphrase, it could result in an apparently
+valid algorithm which would be totally wrong, and then that algorithm would be
+applied when the session keys from previous valid session key packets were used.
+-sbs
+
+2006-03-17 Added a fix to HushEncryptionEngineCore so that a failure to retrieve
+login credentials will not result in an empty Vector for the login credentials
+cache. -sbs
+
+2006-03-16 Exposed the getPrivateAliasDefinition method on KeyManagementServices
+for use by KeyInvestigator.  Fixed KeyInvestigator to support RSA keys and the
+new private aliases. -sbs
+
+2006-03-09 Release 2.5.0.6.
+
+2006-03-08 Added various parameters for setting key algorithms and sizes, and
+for setting which hash algorithms and iteration counts are used for various
+purposes.  See the documentation for init() in HushEncryptionEngineCore().
+Added static methods to AlgorithmFactory for converting from a string to an
+integer algorithm identifier.  Keep default hash in Signature back to SHA1
+for the time being until some backwards compatibility issues are resolved. -sbs
+
+2006-03-05 Stopped using variable name "delegate" in Logger because it's a
+reserved word in Microsoft Java.  Added back the automatic removal of expiration
+dates from keys, but now it uses a "publicKeyUpdateRequest" instead of a
+"publicKeyEditRequest".  Update IDL to reflect version 2.5 instead of 2.4. -sbs
+
+2006-03-01 Changed default signing key size to 1024 bits.  Updated to
+BouncyCastle Lightweight Crypto 1.31.  -sbs
+
+2006-02-28 Added the ability to set the private alias hash algorithm and
+private alias iteration count used for new accounts in KeyManagementServices.
+Added applet parameters privateAliasHashAlgorithm and privateAliasIterationCount
+as well.  Added some additional response validation to RequestConnection.
+Made private getAllEncryptionKeys in Keyring static.  Modified addKey
+in Keyring to not modify the currentMainKey, as that should only be done by the
+calling code.  It now returns a reference to the object where the passed key
+was stored, which is either the key itself or another key with which it was
+merged.  Fixed several bugs in Keyring that would've resulted in
+NullPointerExceptions when parsing keys in which objects were found that could
+not be associated with a parent object.  Require the explicit initialization
+of Apache Commons Logging via CommonsLoggerDelegate.install() or the
+installCommonsLoggerDelegate HEE parameter, as attempting to install it
+via Class.forName was resulting in the Jar being downloaded by the Microsoft
+VM. -sbs
+
+2006-02-23 Fixed a bug that prevented successful authenitcation of a private
+alias against a cached key record.  Deleted old code for stripping expiration
+dates from public keys, including public key deletion request.  Removed an
+unused variable.  -sbs
+
+2006-02-22 Eliminated all System.err.println calls in favor of Logger.
+Added logging using Apache Commons if available.  Added some error
+handlinf for a null keyserver parameter.  Removed unecessarily added
+serialVerionUID.  Removed various unused variables. -sbs
+
+2006-02-18 Private aliases using SHA256 were being truncated to 20 bytes;
+extend them to 32 bytes. -sbs
+
+2006-02-17 Made HushEncryptionEngineCore, KeyManagementServices, and most PGP
+object serializable, so session can persist between server restarts in webapps.
+-sbs
+
+2006-02-01 Added support for private alias definitions, and changed the default
+private alias for new keys to be iteration count 65536 with SHA256. Made
+changes to private alias generation in KeyManagementServices and added an
+element to PukUpdateRequest to accomodate this. Removed various unused
+variable from various locations. Corrected a case problem in the XML for
+PvKUpdateRequest. Modified RequestConnection to accept an XML header that has
+extra attributes, such as standalone. Modified CDATAReader to read element
+data even if it is not contained in a CDATA section. Added restrictions in Key
+to creating keys with unsupported sizes, and added getUserIDs method to get
+all the user ID's on a key. Fixed SignatureInputStream for handling RSA
+signatures.  Fixed a Base64 bug that was causing encoding to fail for chunks
+of certain sizes.
+
+2005-11-29 Added method exportKeysToString to HushEncryptionEngineCore.java
+
+2005-10-31 Keyring now handles signatures on main keys that don't necessarily
+come immediately after the main key.  This means that "signature directly on
+key" is interpreted to mean "signature directly on most recent main key".  Now
+any signature of any type is interpreted to apply to the most recently
+parsed object of the type the signature might apply to.  If no such object has
+yet been found, the signature is ignored, thus, signatures must come AFTER the
+object to which they are applied.  Renamed a couple of misnamed constants,
+from SIGNATURE_CERTIFICATION_PERSONAL, SIGNATURE_CERTIFICATION_VERIFICATION
+and SIGNATURE_SUBKEY_VERIFICATION to SIGNATURE_CERTIFICATION_PERSONA,
+SIGNATURE_CERTIFICATION_REVOCATION and SIGNATURE_SUBKEY_REVOCATION.  Fixed a
+bug in ArmorInputStream that could cause an ArrayIndexOutOfBoundsException.
+Signature is now of type Signable, so it can take signatures itself, such as
+certification revocations.  In PgpMessageInputStream, don't assume that the
+encryption key under a given key ID is used for decryption, always try to key
+associated with the exact key ID first, then try other encryption keys under
+that key ID.  (In case an RSA signing key was used for encryption.)  Suppressed
+some decryption warnings when trying to decrypt wildcard messages.
+
+2005-10-28 Enhanced RSA implementation to utilize the "extra" factors for the
+Chinese Remainder Theorem in encryption.
+
+2005-10-25 Method getEncryptionKey now returns a subkey over the main key if
+there is an available subkey even if the main key is an encryption key.  Added
+isEncryptionKey method to Key.  Added getAllEncryptionKeys method to Key and
+and Keyring and used it in PgpMessageInputStream.setKeyring to be sure every
+possible key is tried when decrypting wildcard messages.  Added
+decryptSecretKeys method to Keyring to facilitate private key decryption.
+Changed KeyGenerator defaults to RSA and SHA256.  Reorganized packet order when
+saving a Keyring to conform with what PGP does.  Changed default hash algorithm
+in Signature to SHA256, but if DSA is used, it is forced to SHA1.
+Changed KeyManagementServices to use SHA256 as the default hash, and to be more
+forgiving when searching for the key to decrypt.
+
+2005-09-14 Release 2.4.0.77
+
+2005-09-14 Added support for passphrase canonicalization required by
+Hushmail Express.
+
+2005-09-01 Removed MD2 support, added SHA256,384,512 support.
+
+2005-08-25 Removed a lot of logging calls to reduce overhead.
+
+2005-08-17 Fixed a bug that was stripping some bytes from the beginnning of
+Hushmail 1.0 messages.
+
+2005-08-09 Added an extra attempt to close the output file in copyURLToFile in
+case closing the wrapping BufferedOutputStream did not do it.
+
+2005-07-27 Added cachePasswords parameter to HEE.  If set, passwords used to
+decrypt text and files (not the private key passphrase) will be cached and tried
+with every future decrypt operation.  If file selection is cancelled in
+sendFileToURL, an exception is thrown instead of a silent exit.  Stopped
+enforcing the position of the end header in legacy messages, because the ad
+footer conflicts.
+
+2005-07-19 Fixed a cause of NullPointerException in PgpMessageInputStream if
+a null Keyring is added.  Don't require authentication is HEE decrypt if a 
+password is specified for decryption.
+
+2005-06-30 Fixed a bug in PgpMessageOutputStream where the wrong algorithm
+was getting used for encrypting session keys.  Removed the section of code that
+allows for directly encrypting the message with the given password if only one
+password is specified, as it does not serve any useful purpose and complicates
+the code.  Better to treat the message the same whether 1 or multiple passwords
+and recipients are specified.  Modified sendFileToUrl in HEE to not ignore
+recipient aliases just because a password is specified.  This behavior was
+probably not intentional.
+
+2005-06-09 Release 2.4.0.59
+
+2005-06-07 Added the ability to access Java vendor and version through the
+applet interface.  Updated to BouncyCastle 1.28.
+
+2005-05-13 Added test classes.  Fixed signature verification so a blank string
+alias is treated like null.
+
+2005-04-04 CA signature and expiration on certificates is now only checked in
+the getKeys and finishSignatureVerification methods in HushEncryptionEngineCore.
+Checking it in other places is redundant, and in some cases was resulting in
+checking certificates that should not be checked, such as externally supplied
+PGP keys in Hushtools.  Fixed the CheckForCertificates method in the HEE COM
+wrapper, which was always returning a failure.
+
+2005-03-16 Upgraded to BouncyCastle 1.27.  Jarsigner now supports
+PKCS12 keybags, so changed the Makefile to use that instead of Netscape 4.
+
+2004-12-23 Added more advanced logging, with the ability to override the
+function that writes to the log.  Fixed a bug in the COM wrapper where null
+was getting passed instead of the signer alias in VerifyText.  Eliminated
+repeated code during the end of signature verifications in
+HushEncryptionEngineCore, consolidating it into the finishSignatureVerification
+method.  Consolidated other repeated code into the getSignerKey and getKeys
+methods.  Made several private methods protected so they can be accessed by the
+SOAP wrapper.  Did some code cleanup in PuKLookupRequest.  Added ability to
+specify log level by the logLevel parameter.  Added the getAnonymous method
+on HushEncryptionEngineCore.
+
+2004-10-28 Release 2.4.0.52
+
+2004-10-28 Ensured that all aliases input to the engine are trimmed of
+whitespace.  Login credentials were not getting cached in the class variable,
+resulting in more lookups then necessary, so that was fixed.  Updated verifyFile
+and signFile functions because the file input streams they were using were not
+getting closed.
+
+2004-10-19 Release 2.4.0.51
+
+2004-10-19 Fixed a bug in passphrase reconstruction that caused occasional
+failures.  Added methods for removing user ID's, user attributes, and subkeys
+from a Key.  Modified the importKey method in KMS to strip all user ID's that
+do not match the alias before uploading the key.  Fixed various places where
+RSA sign-only/encrypt-only were not counted as valid algorithms.
+
+2004-09-15 Fixed a padding bug in the test() method of
+com.hush.pgp.Key that was causing an error whenever the first byte of
+random data was 0.  Fixed RSA key generation. 
+
+2004-09-15 Release 2.4.0.50
+
+2004-09-15 Fixed a bug that caused some invalid signatures to appear to
+verify.
+
+2004-07-23 Forced AES256 as symmetric algorithm when changing login
+credentials, to support old Hush Encryption Engine used in Messenger.
+Some private keys don't contain preferred algorithm packets.
+
+2004-07-15 Release 2.4.0.49
+
+2004-07-15 Removed the selectFile public method from the applet and integrated
+file selection directly into all methods that deal with files.  Consolidated
+all file to URL methods into a single method and added signature support.
+Consolidated all URL to file methods into a single method and added verification
+support.  Added HushEncryptionEngineBeanInfo to proguard.conf, so it wouldn't
+get obfuscated.
+
+2004-05-26 Changed com.hush.pgp.Key.encryptSecretKeyMaterial to accept an
+argument specifying the use of MOD65536 checksums instead of SHA1.  This will
+give compatibility with PGP as old as 6.5.8, and possibily older, although
+older is untested.  Changed the Hush Encryption Engine key export process to
+set this argument.
+
+2004-05-10 Release 2.4.0.40
+
+2004-05-07 Eliminated dynamic loading of LegacyHushmail in the main engine
+because it was not being used and would require that the class not be
+obfuscated.  (The code remains commented out.)
+
+2004-04-26 Added support for retrieving information on optional additional
+decryption keys to be used for a domain.  After a secret key export, the
+passphrase is now removed from the secret key object, because that was causing
+an export followed by a passphrase change to break an account because the
+passphrase on the internal secret key packet would not match the passphrase on
+the external anonymous OpenPGP message.
+
+2004-04-20 Release 2.4.0.36
+
+2004-04-02 Added the ability to set a maximum POST request size for the methods
+that send a file to a URL.  This allows errors to be handled at the client
+before an upload happens.  Cleaned up status code handling in HTTPRequest.
+
+2004-03-31 Ensured that no MDC is used for random seed, private key, or login
+credentials.  It's not needed and causes problems with old stuff that does not
+support MDC.  Changed changeLoginCredentials to match code in
+storeLoginCredentials.
+
+2004-03-30 Changed exportKeysToFile to support a null passphrase.  Changed PGP
+armor version header to 2.4.
+
+2004-03-29 Changed the symmetric encryption methods on the Hush Encryption
+Engine to default to AES256.  The changes of March 18 were causing them to
+default to 3DES.
+
+2004-03-25 Added createKeys2 alias in HushEncryptionEngine because the 1.3
+Java plug-in has trouble distinguishing between methods with the same name and
+different numbers of parameters.
+
+2004-03-18 PgpMessageOutputStream now defaults to choosing whether or not to use
+MDC based on the symmetric algorithm.  AES and Twofish get MDC.  This behavior
+is overridden if the setUseMdc method is called.
+
+2004-03-09 Fixed a bug in com.hush.pgp.Key.getUserIDs() that was causing the
+user ID array to be created based on the number of subkeys, not user IDs.
+
+2004-03-04 Added a check for null shadows in
+HushEncryptionEngine.retrieveShadows().
+
+2004-03-02 Fixed a bug which was causing passphrase change to fail
+unless you were already authenticated as the user in a previous step.
+This was bad because in the case of an administrator it is sometimes
+necessary to change a passphrase without changing the authenticated
+user.
+
+2004-02-17 Release 2.4.0.24
+
+2004-02-17 Fixed a bug in HushEncryptionEngine in which the
+passwordDecryptUrlToFile method was not actually performing decryption.
+
+2004-01-27 Added methods to the applet for password encryption of text.  This
+also required the addition of new methods to HushEncryptionEngineCore.
+
+2004-01-26 Fixed a bug in HushEncryptionEngineCore.init that was causing failed
+parsing of the pgpSignatureHeader parameter.
+
+2004-01-22 Release 2.4.0.22
+
+2004-01-19 Added forgiveBadRandomSeed parameter, which allows the authentication
+process to recover if the random seed is missing or corrupt.  Also added
+more debugging output in the authentication process.  Added continuous random
+number generation check to SHA1BlumBlumShubSecureRandom and pair-wise
+consistency check to Key for compliance with FIPS140-2.
+
+2003-11-28 Fixed problem in PgpInputStream that was causing a failure to
+decrypt wildcard key ID session key packets.  Added the SetAnonymous method
+in the applet and DLL which turns on wildcard key IDs for all operations.
+
+2003-11-27 Fixed a bug in the Blum Blum Shub PRNG that was occasionally
+causing an ArrayIndexOutOfBoundsException.
+
+2003-11-18 Release 2.4.0.16
+
+2003-11-18 Added IntegrityCheckFailureException and NoSessionKeyException to
+the throws clause in HushEncryptionEnginCore decryption methods where it was
+missing.
+
+2003-11-17 Fixed problem where the signature output stream for a signed request
+was not getting closed, causing signed requests to fail.
+
+2003-11-09 Release 2.4.0.15 (DLL only)
+
+2003-11-09 Updated DLL to include a SaveFileToFile method.
+
+2003-11-03 Release 2.4.0.13
+
+2003-11-03 Resolved problem in which OpenPGP attachments encrypted to a
+recipient list that did not include the email recipient were not getting saved
+by Hushmail.  To fix this, HushEncryptionEngineCore.copyUrlToFile was changed to
+catch all exceptions, not just DataFormatException, thus allowing the
+NoSessionKeyException to be caught, and the file to be saved without decryption.
+Resolved problem in which output streams to HTTP connections were not getting
+closed, which seems to cause a problem on WinNT.
+
+2003-10-29 Release 2.4.0.8
+
+2003-10-28 Fixed two bugs in Blum Blum Shub implementation.  Changed
+PgpMessageInputStream to immediately throw a DataFormatException if the data
+is armored, and not an appropriate armor type.  Modified the copyURLToFile
+method in HushEncryptionEngineCore to save without decrypting if there is a
+DataFormatException, and to strip ".asc" extensions from filenames if the data
+is a valid OpenPGP message and a file of the same name does not already exist.
+
+2003-10-08 Changed com.hush.pgp.Keyring to not distinguish between public and
+secret keys.  Now instead of keeping separate arrays for each, it keeps a
+single array, and if exporting secret keys, exports only those keys that have
+secret key material.  Also added a "merge" method to com.hush.pgp.Key and
+com.hush.pgp.UserID so that information from two keys with the same key ID or
+two user ID's with the same name can be merged into the same object instead of
+creating duplicate entries.  Changed KeyManagementServices
+.retrievePrivateKeyRecord to check the validity of the passphrase on an attempt
+to retrieve a cached key record if the passphrase is not null.
+Added exportKeysToFile method to the HushEncryptionEngineCore and
+HushEncryptionEngine.
+
+2003-09-23 Changed default base-64 line length from 68 to 64 characters to
+match the behavior of GnuPG and other OpenPGP apps.  Added the ability to
+specify preferred symmetric algorithms to com.hush.pgp.KeyGenerator.
+Added copyright header.  Updated PgpMessageOutputStream to properly choose
+symmetric and compression algorithms based on the intersection of the
+preferences of the recipients.  Change the PgpMessageOuputStream constructor
+to be as simple as possible, with access methods used to set all options.
+
+2003-09-22 Added ability to generate RSA signatures.  Added ASN.1 hash prefixes
+to com.hush.pgp.PgpConstants.  (Note that the hash prefixes are still not
+checked during signature verification.)  More cleanup of PgpConstants.  Added a
+com.hush.pgp.tests package containing a class to generate a script instructing
+gnupg to create a range of test keys, and a class to run through those keys
+testing them.
+
+2003-09-18 Improved random number gathering to include passing all
+parameters to every Engine call into the PRNG mixer.  Also added a background
+thread that updates the saved random seed on the server.  The cycle length is
+specified in seconds by the "randomSeedUpdateCycle" parameter.  Cleaned up
+com.hush.pgp.PgpConstants.
+
+2003-09-11 Changed key record creation process to upload the public key first,
+before the private key.  Uploading the private key first was causing situations
+where the public and private key for an alias did not match, because a new
+private key would be uploaded for an existing account and then the public key
+upload failed.  Added a new method to encrypt a file by specifying an input
+file and an output file instead of performing the operation directly on a
+single specified file.
+
+2003-09-05 Added algorithm test functionality, which runs a test of every
+algorithm if the "testAlgorithms" parameter is set to "true".  Note that the
+algorithm test code must be specifically compiled.  See the Makefile.
+
+2003-08-25 Updated HushEncryptionEngineCore because flushing the output stream
+in copyFileToUrl was causing an exception in Opera.
+
+2003-08-08 Release 2.3.0.41
+
+2003-08-08 Changed KeyManagementServices.isAliasAvailable to return true if
+alias activation status is "Pre Activated" or "Awaiting Activation Email", and
+false if alias activation status is "Active" or  a "Denied" request status is
+received, which would indicate an alias activation status of "Hush Deactivated"
+or "Customer Deactivated".
+
+2003-08-05 Eliminated flushing and closing of the OutputStream to the
+URLConnection in com.hush.net.HttpRequest.  It was breaking Opera.
+
+2003-08-01 Added support for PublicKeyDeletionRequest, but only exposed it in
+the DLL interface, not the applet interface.
+
+2003-07-24 Added getPreferredCompressionAlgorithms,
+getPreferredHashAlgorithms, and getPreferredSymmetricKeyAlgorithms methods to
+com.hush.pgp.Key.
+
+2003-07-23 Changed user ID format on new accounts from just alias to "alias"
+<alias>, because not having a full name breaks some PGP clients.
+
+2003-07-22 Added "onStopUrl" parameter to com.hush.core.security.applet
+.HushEncryptionEngine to allow a URL to be accessed on Applet.stop().  This
+will allow for more reliable session deletion in Hushmail.  Implemented ability
+to retrieve last access time for a private key up through top-level interfaces.
+
+2003-07-21 Release 2.3.0.35
+
+2003-07-21 Fixed problem in KeyManagementServices.createKeyRecord in which the 
+preferred symmetric algorithm was set using setPreferredHashAlgorithm.  Fixed
+a problem which was interpreting a "" Hush-keyblocks parameter as indicated
+a Hushmail 1.x message in HushEncryptionEngineCore.copyUrlToFile.
+
+2003-07-19 Fixed com.hush.pgp.io.packets.PublicKeyInputStream to correctly 
+interpret the validity period on V3 keys.  This was causing self-signatures to 
+fail on some V3 keys.
+
+2003-07-03 Includes support for legacy Hushmail formats 1.0, 1.11, and 1.3.  
+Updated AlgorithmFactory to load symmetric ciphers and digests using the 
+Class.forName method, so that not all algorithms need be included in a package,
+allowing us to reduce the size of the archive.
+
+2003-06-20 Includes support for passphrase expiration.  Extensively pared down 
+the code that handles network operations with the keyserver.  Rearranged 
+exception handling throughout.

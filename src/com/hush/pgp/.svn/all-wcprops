@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/23272/hee/trunk/com/hush/pgp
+END
+SignatureSubpacket.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/21951/hee/trunk/com/hush/pgp/SignatureSubpacket.java
+END
+Key.java
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/23151/hee/trunk/com/hush/pgp/Key.java
+END
+CommandLinePgp.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/20291/hee/trunk/com/hush/pgp/CommandLinePgp.java
+END
+Signature.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/20074/hee/trunk/com/hush/pgp/Signature.java
+END
+KeyFlags.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/20291/hee/trunk/com/hush/pgp/KeyFlags.java
+END
+Signable.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/22902/hee/trunk/com/hush/pgp/Signable.java
+END
+KeyGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/20291/hee/trunk/com/hush/pgp/KeyGenerator.java
+END

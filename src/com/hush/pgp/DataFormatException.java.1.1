@@ -1,0 +1,33 @@
+/*
+ * BEGIN HEADER
+ * c 1999-2003 HUSH COMMUNICATIONS CORP      ALL RIGHTS RESERVED
+ * This source code is for review only.  Please contact Hush Communications for
+ * licensing terms.  (http://corp.hush.com/contact/)
+ * END HEADER
+ */
+
+package com.hush.pgp;
+
+import java.io.IOException;
+
+/**
+ * This is a subclass of IOException intended to be thrown from a read method of
+ * an InputStream when the is a problem interpreting the format of the data being
+ * read.  This allows the code catching the exception to determine if the problem
+ * is caused by a format problem, or a lower-level problem such as a network error.
+ */
+public class DataFormatException extends IOException
+{
+	private static final long serialVersionUID = -1393936409638016276L;
+
+	public DataFormatException(String message)
+	{
+		super(message);
+	}
+	
+	public static DataFormatException wrap(String message, Throwable e)
+	{
+		e.printStackTrace();
+		return new DataFormatException(message + " - " + e.getMessage());
+	}
+}

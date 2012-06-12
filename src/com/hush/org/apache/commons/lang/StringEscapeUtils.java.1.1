@@ -1,0 +1,40 @@
+package com.hush.org.apache.commons.lang;
+
+public class StringEscapeUtils {
+
+    public static String escapeXml(String str) {
+        if (str == null) {
+            return null;
+        }
+        StringBuffer n = new StringBuffer(str.length() * 2 );
+        for ( int i=0; i<str.length(); i++ )
+        {
+        	if ( str.charAt(i) == '&' )
+        	{
+        		n.append("&amp;");
+        	}
+        	else if ( str.charAt(i) == '>' )
+        	{
+        		n.append("&gt;");
+        	}
+        	else if ( str.charAt(i) == '<' )
+        	{
+        		n.append("&lt;");
+        	}
+        	else if ( str.charAt(i) == '"' )
+        	{
+        		n.append("&quot;");
+        	}
+        	else if ( str.charAt(i) == '\'' )
+        	{
+        		n.append("&apos;");
+        	}
+        	else
+        	{
+        		n.append(str.charAt(i));
+        	}
+        }
+        return n.toString();
+    }
+
+}
